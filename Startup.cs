@@ -14,10 +14,10 @@ namespace TableStorage
 {
     public class Startup : FunctionsStartup
     {
-
         public override void Configure(IFunctionsHostBuilder builder) 
         {
 
+            // Construct a new "TableServiceClient using a TableSharedKeyCredential.
 
                 builder.Services.AddScoped<HelloAzuriteTableStorage>( (s) => {
 

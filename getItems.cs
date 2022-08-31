@@ -18,12 +18,9 @@ namespace TableStorage
     public class HelloAzuriteTableStorage
     {
         private readonly TableClient _tableClient;
-        //public TableClient tableClient;
         public HelloAzuriteTableStorage(TableClient tableClient) 
         {
             this._tableClient = tableClient;
-            // Create the table in the service.
-            tableClient.CreateIfNotExists();
         }
 
         [FunctionName("PostItem")]
