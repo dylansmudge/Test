@@ -14,22 +14,17 @@ namespace TableStorage
 {
     public class Startup : FunctionsStartup
     {
+
         public override void Configure(IFunctionsHostBuilder builder) 
         {
-
-            // Construct a new "TableServiceClient using a TableSharedKeyCredential.
-
-                builder.Services.AddScoped<HelloAzuriteTableStorage>( (s) => {
-
                     string AccountName = Environment.GetEnvironmentVariable("AccountName");
                     string TableName = Environment.GetEnvironmentVariable("TableName");
                     string Uri = Environment.GetEnvironmentVariable("Uri");
                     string AccountKey = Environment.GetEnvironmentVariable("AccountKey");
-    
-                    TableClient tableClient = new TableClient(
-                        new Uri(Uri),
-                        TableName,
-                        new TableSharedKeyCredential(AccountName, AccountKey));
+
+                builder.Services.AddSingleton<HelloAzuriteTableStorage>( (s) => {
+
+                    TableClient tableClient = new TableClient(new Uri(Uri), TableName, new TableSharedKeyCredential(AccountName, AccountKey));
 
                         return new HelloAzuriteTableStorage(tableClient);
                     });
