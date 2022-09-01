@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using System.IO;
 using Azure.Data.Tables;
 using Azure;
+using System.Web;
 
 namespace TableStorage
 {
@@ -17,10 +18,10 @@ namespace TableStorage
 
     public class HelloAzuriteTableStorage
     {
-        private readonly TableClient _tableClient;
-        public HelloAzuriteTableStorage(TableClient tableClient) 
+        private readonly TableClient _itemTableClient;
+        public HelloAzuriteTableStorage(TableClient itemTableClient) 
         {
-            this._tableClient = tableClient;
+            this._itemTableClient = itemTableClient;
         }
 
         [FunctionName("PostItem")]
@@ -48,7 +49,7 @@ namespace TableStorage
 
                 WarehouseItems warehouseItems = JsonConvert.DeserializeObject<WarehouseItems>(requestBody);
 
-                await _tableClient.AddEntityAsync(warehouseItems);
+                await _itemTableClient.AddEntityAsync(warehouseItems);
 
                 return new OkObjectResult(requestBody);
 
@@ -69,7 +70,7 @@ namespace TableStorage
             try
             {
 
-                Pageable<TableEntity> queryResultsFilter = _tableClient.Query<TableEntity>();
+                Pageable<TableEntity> queryResultsFilter = _itemTableClient.Query<TableEntity>();
 
                 Console.WriteLine($"The query returned {queryResultsFilter.Count()} entities.");
                 
@@ -81,6 +82,53 @@ namespace TableStorage
                 log.LogError(e, "Problem loading");
                 return new BadRequestObjectResult("There was an issue");
             }
+        }
+
+                [FunctionName("GetItem1")]
+        public async Task<IActionResult> RunGetItem1(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
+            ILogger log)
+        {
+            try
+            {
+                Uri myUri = new Uri("http://localhost:7071/api/GetItem1?PartitionKey=1");
+                string Parameters = HttpUtility.ParseQueryString(myUri.Query).Get("PartitionKey");
+
+                log.LogInformation(Parameters);
+                Pageable<TableEntity> queryResultsFilter = _itemTableClient.Query<TableEntity>(ent => ent.PartitionKey.Equals(Parameters));
+                return new OkObjectResult(queryResultsFilter);
+
+            }
+            catch (Exception e)
+            {
+                log.LogError(e, "Problem loading");
+                return new BadRequestObjectResult("There was an issue");
+            }
+        }
+
+        [FunctionName("PostItems")]
+        public async Task<IActionResult> RunPostItems(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
+            ILogger log)
+        {
+            try
+            {
+
+                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                log.LogInformation("Request body is {requestBody}", requestBody);
+                WarehouseItems warehouseItems = JsonConvert.DeserializeObject<WarehouseItems>(requestBody);
+
+                await _itemTableClient.AddEntityAsync(warehouseItems);
+
+                return new OkObjectResult(requestBody);
+
+            }
+            catch (Exception e)
+            {
+                log.LogError(e, "Error with creating item. Check that it does not exist already.");
+            }
+
+            return new BadRequestObjectResult("There was an issue");
         }
     }
 }

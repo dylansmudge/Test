@@ -1,0 +1,34 @@
+[
+    {
+        "PartitionKey": "1",
+        "RowKey": "1",
+        "Name": "HB Pencil",
+        "Description": "It's an HB pencil",
+        "Price": 2,
+        "Quantity": 31
+    },
+    {
+        "PartitionKey": "2",
+        "RowKey": "3",
+        "Name": "Mug",
+        "Description": "Rainbow Mug with curved handle",
+        "Price": 12,
+        "Quantity": 45
+    },
+    {
+        "PartitionKey": "3",
+        "RowKey": "3",
+        "Name": "Teaspoon",
+        "Description": "Silver Teaspoon",
+        "Price": 4,
+        "Quantity": 8
+    },
+    {
+        "PartitionKey": "4",
+        "RowKey": "4",
+        "Name": "Cable",
+        "Description": "Lightning Cable",
+        "Price": 6,
+        "Quantity": 2
+    }
+]

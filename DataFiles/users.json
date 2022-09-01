@@ -1,0 +1,22 @@
+[
+    {
+        "PartitionKey": "1",
+        "RowKey": "1",
+        "Name": "Dylan"
+    },
+    {
+        "PartitionKey": "2",
+        "RowKey": "2",
+        "Name": "Vanessa"
+    },
+    {
+        "PartitionKey": "3",
+        "RowKey": "3",
+        "Name": "Jing"
+    },
+    {
+        "PartitionKey": "4",
+        "RowKey": "4",
+        "Name": "Tomo"
+    }
+]

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Azure;
 using Azure.Data.Tables;
+using Azure.Storage.Blobs;
 
 [assembly: FunctionsStartup(typeof(TableStorage.Startup))]
 
@@ -14,20 +15,43 @@ namespace TableStorage
 {
     public class Startup : FunctionsStartup
     {
-
         public override void Configure(IFunctionsHostBuilder builder) 
         {
-                    string AccountName = Environment.GetEnvironmentVariable("AccountName");
-                    string TableName = Environment.GetEnvironmentVariable("TableName");
-                    string Uri = Environment.GetEnvironmentVariable("Uri");
-                    string AccountKey = Environment.GetEnvironmentVariable("AccountKey");
+            string AccountName = Environment.GetEnvironmentVariable("AccountName");
+            string TableItem = Environment.GetEnvironmentVariable("TableItem");
+            string TableUser = Environment.GetEnvironmentVariable("TableUser");
+            string TableImage = Environment.GetEnvironmentVariable("TableImage");
+            string Uri = Environment.GetEnvironmentVariable("Uri");
+            string imageConnectionString = Environment.GetEnvironmentVariable("BlobUri");
+            string blobContainerName = Environment.GetEnvironmentVariable("BlobImage");
+            string AccountKey = Environment.GetEnvironmentVariable("AccountKey");
 
-                builder.Services.AddSingleton<HelloAzuriteTableStorage>( (s) => {
+            TableClient itemTableClient = new TableClient(new Uri(Uri), 
+                TableItem, 
+                new TableSharedKeyCredential(AccountName, AccountKey));
 
-                    TableClient tableClient = new TableClient(new Uri(Uri), TableName, new TableSharedKeyCredential(AccountName, AccountKey));
+            builder.Services.AddSingleton<TableClient>( (s) => {
+                    return itemTableClient;
+                });
 
-                        return new HelloAzuriteTableStorage(tableClient);
-                    });
+            builder.Services.AddSingleton<HelloAzuriteTableStorage>( (s) => {
+                    return new HelloAzuriteTableStorage(itemTableClient);
+                });
+
+            TableClient userTableClient = new TableClient(new Uri(Uri), 
+                TableUser, 
+                new TableSharedKeyCredential(AccountName, AccountKey));
+
+            builder.Services.AddSingleton<TableClient>( (s) => {
+                    return userTableClient;
+                });
+
+            builder.Services.AddSingleton<UserRequests>( (s) => {
+                    return new UserRequests(userTableClient);
+                });
+
+
+            BlobClient imageBlob = new BlobClient(new Uri(imageConnectionString), blobContainerName); 
         }
 
     }

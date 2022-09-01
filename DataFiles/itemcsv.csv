@@ -1,0 +1,5 @@
+PartitionKey,RowKey,Name,Description,Price,Quantity
+1,1,HB Pencil,It's an HB pencil,2,31
+2,3,Mug,Rainbow Mug with curved handle,12,45
+3,3,Teaspoon,Silver Teaspoon,4,8
+4,4,Cable,Lightning Cable,6,2

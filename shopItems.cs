@@ -11,7 +11,8 @@ using Azure;
 
 namespace TableStorage
 {
-    public class WarehouseItems : ITableEntity {
+    public class WarehouseItems : ITableEntity 
+    {
         public string PartitionKey { get; set; }
         public string RowKey {get; set;}
         public string Name { get; set; }
@@ -21,6 +22,23 @@ namespace TableStorage
         public bool isFavorite { get; set; }
         public DateTimeOffset? Timestamp { get; set; }
         public ETag ETag { get; set; }
+    }
+
+        public class Users : ITableEntity 
+    {
+        public string PartitionKey { get; set; }
+        public string RowKey {get; set;}
+        public string Name { get; set; }
+        public int Price { get; set; }
+        public DateTimeOffset? Timestamp { get; set; }
+        public ETag ETag { get; set; }
+    }
+
+    public class ImageContent 
+    {
+        public string PartitionKey { get; set; }
+        public string RowKey {get; set;}
+        public string Text { get; set; }
     }
         
 }
