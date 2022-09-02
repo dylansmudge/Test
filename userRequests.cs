@@ -46,6 +46,30 @@ namespace TableStorage
             }
         }
 
+        [FunctionName("GetUser1")]
+        public async Task<IActionResult> RunGetUser1(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
+            ILogger log)
+        {
+            try
+            {
+                string query = req.Query["PartitionKey"];
+                Console.WriteLine($"query params string is {query}");
+
+                Pageable<TableEntity> queryResultsFilter = _userTableClient.Query<TableEntity>(filter: $"PartitionKey eq '{query}'");
+
+                Console.WriteLine($"The query returned {queryResultsFilter.Count()} entities.");
+                
+                return new OkObjectResult(queryResultsFilter);
+
+            }
+            catch (Exception e)
+            {
+                log.LogError(e, "Problem loading");
+                return new BadRequestObjectResult("There was an issue");
+            }
+        }
+
         [FunctionName("PostUser")]
         public async Task<IActionResult> RunPostUser(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,

@@ -21,6 +21,7 @@ namespace TableStorage
             string TableItem = Environment.GetEnvironmentVariable("TableItem");
             string TableUser = Environment.GetEnvironmentVariable("TableUser");
             string TableImage = Environment.GetEnvironmentVariable("TableImage");
+            string TableFavorite = Environment.GetEnvironmentVariable("TableFavorites");
             string Uri = Environment.GetEnvironmentVariable("Uri");
             string imageConnectionString = Environment.GetEnvironmentVariable("BlobUri");
             string blobContainerName = Environment.GetEnvironmentVariable("BlobImage");
@@ -50,8 +51,18 @@ namespace TableStorage
                     return new UserRequests(userTableClient);
                 });
 
+            TableClient favoriteTableClient = new TableClient(new Uri(Uri), 
+                TableFavorite, 
+                new TableSharedKeyCredential(AccountName, AccountKey));
 
-            BlobClient imageBlob = new BlobClient(new Uri(imageConnectionString), blobContainerName); 
+            builder.Services.AddSingleton<TableClient>( (s) => {
+                    return favoriteTableClient;
+                });
+
+            builder.Services.AddSingleton<Favorites>( (s) => {
+                    return new Favorites(favoriteTableClient);
+                });
+
         }
 
     }

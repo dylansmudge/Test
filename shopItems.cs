@@ -19,7 +19,6 @@ namespace TableStorage
         public int Price { get; set; }
         public string Description { get; set; }
         public int Quantity { get; set; }
-        public bool isFavorite { get; set; }
         public DateTimeOffset? Timestamp { get; set; }
         public ETag ETag { get; set; }
     }
@@ -29,9 +28,18 @@ namespace TableStorage
         public string PartitionKey { get; set; }
         public string RowKey {get; set;}
         public string Name { get; set; }
-        public int Price { get; set; }
         public DateTimeOffset? Timestamp { get; set; }
         public ETag ETag { get; set; }
+    }
+
+    public class FavoriteItems : ITableEntity
+    {
+        public string PartitionKey { get; set; }
+        public string RowKey {get; set;}
+        public bool isFavorite { get; set; }
+        public DateTimeOffset? Timestamp { get; set; }
+        public ETag ETag { get; set; }
+
     }
 
     public class ImageContent 
@@ -40,5 +48,6 @@ namespace TableStorage
         public string RowKey {get; set;}
         public string Text { get; set; }
     }
+
         
 }
