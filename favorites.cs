@@ -16,11 +16,18 @@ namespace TableStorage
 {
     public class Favorites
     {
-        private readonly TableClient _favoriteTableClient;
 
-        public Favorites(TableClient favoriteTableClient)
+        string AccountName = Environment.GetEnvironmentVariable("AccountName");
+        string TableFavorite = Environment.GetEnvironmentVariable("TableFavorites");
+        string Uri = Environment.GetEnvironmentVariable("Uri");
+        string AccountKey = Environment.GetEnvironmentVariable("AccountKey");
+        private readonly TableClient _favoriteTableClient;
+        public Favorites() 
         {
-            this._favoriteTableClient = favoriteTableClient;
+            this._favoriteTableClient = 
+            new TableClient(new Uri(Uri), 
+                TableFavorite, 
+                new TableSharedKeyCredential(AccountName, AccountKey));
         }
 
         [FunctionName("GetFavorites")]
@@ -51,18 +58,14 @@ namespace TableStorage
         {
             try
             {
-                string UserId = req.Query["UserId"];
-                string ItemId = req.Query["ItemId"];
-                Console.WriteLine($"query params string is UserId {UserId} ItemId {ItemId}");
-                Pageable<TableEntity> favoriteFilter = _favoriteTableClient.Query<TableEntity>(filter: $"UserId eq '{UserId}' and ItemId eq '{ItemId}'");
+
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 log.LogInformation("Request body is {requestBody}", requestBody);
                 FavoriteItems favorites = JsonConvert.DeserializeObject<FavoriteItems>(requestBody);
-                log.LogInformation("isFavorite is {requestBody}");
 
-                await _favoriteTableClient.UpsertEntityAsync(favorites);
+                await _favoriteTableClient.AddEntityAsync(favorites);
 
-                return new OkObjectResult(favoriteFilter);
+                return new OkObjectResult(favorites);
 
             }
             catch (Exception e)
@@ -74,23 +77,22 @@ namespace TableStorage
         }
         [FunctionName("RemoveFavorite")]
         public async Task<IActionResult> RunRemoveFavorite(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "delete", Route = null)] HttpRequest req,
             ILogger log)
         {
             try
             {
-                string UserId = req.Query["UserId"];
-                string ItemId = req.Query["ItemId"];
-                Console.WriteLine($"query params string is UserId {UserId} ItemId {ItemId}");
-                Pageable<TableEntity> favoriteFilter = _favoriteTableClient.Query<TableEntity>(filter: $"UserId eq '{UserId}' and ItemId eq '{ItemId}'");
-                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-                log.LogInformation("Request body is {requestBody}", requestBody);
-                FavoriteItems favorites = JsonConvert.DeserializeObject<FavoriteItems>(requestBody);
-                log.LogInformation("isFavorite is {requestBody}");
+                string PartitionKey = req.Query["PartitionKey"];
+                string RowKey = req.Query["RowKey"];
+                Console.WriteLine($"query params string is PartitionKey {PartitionKey} RowKey {RowKey}");
 
-                await _favoriteTableClient.UpsertEntityAsync(favorites);
+                Pageable<TableEntity> favoriteFilter = _favoriteTableClient.Query<TableEntity>(filter: $"PartitionKey eq '{PartitionKey}' and RowKey eq '{RowKey}'");
 
-                return new OkObjectResult(favoriteFilter);
+                Pageable<TableEntity> queryResultsFilter = _favoriteTableClient.Query<TableEntity>();
+
+                await _favoriteTableClient.DeleteEntityAsync(PartitionKey, RowKey);
+
+                return new OkObjectResult($"Deleted Wishlist item with PartitionKey {PartitionKey}");
 
             }
             catch (Exception e)
