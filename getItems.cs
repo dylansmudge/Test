@@ -18,10 +18,19 @@ namespace TableStorage
 
     public class HelloAzuriteTableStorage
     {
+
+        string AccountName = Environment.GetEnvironmentVariable("AccountName");
+        string TableItem = Environment.GetEnvironmentVariable("TableItem");
+        string Uri = Environment.GetEnvironmentVariable("Uri");
+        string AccountKey = Environment.GetEnvironmentVariable("AccountKey");
+
         private readonly TableClient _itemTableClient;
-        public HelloAzuriteTableStorage(TableClient itemTableClient) 
+        public HelloAzuriteTableStorage() 
         {
-            this._itemTableClient = itemTableClient;
+            this._itemTableClient = 
+            new TableClient(new Uri(Uri), 
+                TableItem, 
+                new TableSharedKeyCredential(AccountName, AccountKey));
         }
 
         [FunctionName("PostItem")]

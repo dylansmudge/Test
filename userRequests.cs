@@ -18,10 +18,18 @@ namespace TableStorage
 
     public class UserRequests
     {
+
+        string AccountName = Environment.GetEnvironmentVariable("AccountName");
+        string TableUser = Environment.GetEnvironmentVariable("TableUser");
+        string Uri = Environment.GetEnvironmentVariable("Uri");
+        string AccountKey = Environment.GetEnvironmentVariable("AccountKey");
         private readonly TableClient _userTableClient;
-        public UserRequests(TableClient userTableClient) 
+        public UserRequests() 
         {
-            this._userTableClient = userTableClient;
+            this._userTableClient = 
+            new TableClient(new Uri(Uri), 
+                TableUser, 
+                new TableSharedKeyCredential(AccountName, AccountKey));
         }
     
         [FunctionName("GetUsers")]

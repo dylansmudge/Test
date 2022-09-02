@@ -36,7 +36,8 @@ namespace TableStorage
     {
         public string PartitionKey { get; set; }
         public string RowKey {get; set;}
-        public bool isFavorite { get; set; }
+        public Int32 UserId {get; set;}
+        public Int32 ItemId {get; set;}
         public DateTimeOffset? Timestamp { get; set; }
         public ETag ETag { get; set; }
 
