@@ -31,11 +31,11 @@ namespace TableStorage
                 TableItem, 
                 new TableSharedKeyCredential(AccountName, AccountKey));
 
-            builder.Services.AddSingleton<TableClient>( (s) => {
+            builder.Services.AddScoped<TableClient>( (s) => {
                     return itemTableClient;
                 });
 
-            builder.Services.AddSingleton<HelloAzuriteTableStorage>( (s) => {
+            builder.Services.AddScoped<HelloAzuriteTableStorage>( (s) => {
                     return new HelloAzuriteTableStorage(itemTableClient);
                 });
 
@@ -43,11 +43,11 @@ namespace TableStorage
                 TableUser, 
                 new TableSharedKeyCredential(AccountName, AccountKey));
 
-            builder.Services.AddSingleton<TableClient>( (s) => {
+            builder.Services.AddScoped<TableClient>( (s) => {
                     return userTableClient;
                 });
 
-            builder.Services.AddSingleton<UserRequests>( (s) => {
+            builder.Services.AddScoped<UserRequests>( (s) => {
                     return new UserRequests(userTableClient);
                 });
 
@@ -55,11 +55,11 @@ namespace TableStorage
                 TableFavorite, 
                 new TableSharedKeyCredential(AccountName, AccountKey));
 
-            builder.Services.AddSingleton<TableClient>( (s) => {
+            builder.Services.AddScoped<TableClient>( (s) => {
                     return favoriteTableClient;
                 });
 
-            builder.Services.AddSingleton<Favorites>( (s) => {
+            builder.Services.AddScoped<Favorites>( (s) => {
                     return new Favorites(favoriteTableClient);
                 });
 
