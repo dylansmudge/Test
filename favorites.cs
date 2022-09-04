@@ -51,6 +51,54 @@ namespace TableStorage
             }
         }
 
+        [FunctionName("GetFavorites1")]
+        public async Task<IActionResult> RunGetFavorites1(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
+            ILogger log)
+        {
+            try
+            {
+                string query = req.Query["UserId"];
+
+                Pageable<TableEntity> queryResultsFilter = _favoriteTableClient.Query<TableEntity>(filter: $"UserId eq {query}");
+
+                Console.WriteLine($"The query returned {queryResultsFilter.Count()} entities.");
+                
+                return new OkObjectResult(queryResultsFilter);
+
+            }
+            catch (Exception e)
+            {
+                log.LogError(e, "Problem loading");
+                return new BadRequestObjectResult("There was an issue");
+            }
+        }
+
+        [FunctionName("GetFavoritedItems")]
+        public async Task<IActionResult> RunGetFavoritedItems(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
+            ILogger log)
+        {
+            try
+            {
+                string itemId = req.Query["ItemId"];
+
+                Console.WriteLine($"ItemId {itemId}");
+
+                Pageable<TableEntity> queryResultsFilter = _favoriteTableClient.Query<TableEntity>(filter: $"ItemId eq {itemId}");
+
+                Console.WriteLine($"The query returned {queryResultsFilter.Count()} entities.");
+                
+                return new OkObjectResult(queryResultsFilter);
+
+            }
+            catch (Exception e)
+            {
+                log.LogError(e, "Problem loading");
+                return new BadRequestObjectResult("There was an issue");
+            }
+        }
+
         [FunctionName("MakeFavorite")]
         public async Task<IActionResult> RunMakeFavorite(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
