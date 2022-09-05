@@ -22,6 +22,7 @@ namespace TableStorage
         string Uri = Environment.GetEnvironmentVariable("Uri");
         string AccountKey = Environment.GetEnvironmentVariable("AccountKey");
         private readonly TableClient _favoriteTableClient;
+
         public Favorites() 
         {
             this._favoriteTableClient = 
@@ -88,7 +89,6 @@ namespace TableStorage
                 Pageable<TableEntity> queryResultsFilter = _favoriteTableClient.Query<TableEntity>(filter: $"ItemId eq {itemId}");
 
                 Console.WriteLine($"The query returned {queryResultsFilter.Count()} entities.");
-                
                 return new OkObjectResult(queryResultsFilter);
 
             }
