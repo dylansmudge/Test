@@ -41,6 +41,40 @@ namespace TableStorage
             this._photoBlobClient = 
             new BlobClient(new Uri(Uri), storageSharedKeyCredential);
         }
+
+    [FunctionName("GetImage")]
+        public async Task<IActionResult> GetImage(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
+            ILogger log)
+        {
+
+            string name = req.Query["Name"];
+
+            Console.WriteLine($"Name {name}");
+
+
+            try 
+            {
+                //string downloadpath = "/Users/dylancarlyle/Documents/Test/DataFiles/Photos/" + name;
+                /*BlobDownloadInfo blobdata = await blob.DownloadAsync();
+                using(FileStream downloadFileStream = File.OpenWrite(downloadpath)) 
+                {  
+                    await blobdata.Content.CopyToAsync(downloadFileStream);
+                    downloadFileStream.Close();
+                }*/
+                BlobClient blob = _photoBlobContainerClient.GetBlobClient(name);
+                return new OkObjectResult(blob.Uri); 
+
+            }
+            catch (Exception e)
+            {
+                log.LogError(e, "Error with listing items.");
+            }
+
+            return new BadRequestObjectResult("Trouble showing image");
+
+        }
+
     [FunctionName("ListImages")]
         public async Task<IActionResult> ListImages(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,

@@ -78,7 +78,6 @@ namespace TableStorage
         {
             try
             {
-
                 Pageable<TableEntity> queryResultsFilter = _itemTableClient.Query<TableEntity>();
 
                 Console.WriteLine($"The query returned {queryResultsFilter.Count()} entities.");

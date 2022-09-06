@@ -40,43 +40,43 @@ namespace TableStorage
                 new TableSharedKeyCredential(AccountName, AccountKey));
         }
 
-        [FunctionName("GetLowStock")]
-    public async Task<IActionResult> GetLowStock(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
-        ILogger log)
-    {
-        try
+            [FunctionName("GetLowStock")]
+        public async Task<IActionResult> GetLowStock(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
+            ILogger log)
         {
-            string itemId = req.Query["ItemId"];
-
-            Console.WriteLine($"ItemId {itemId}");
-
-
-            Pageable<TableEntity> favoritesQuery = _favoriteTableClient.Query<TableEntity>(filter: $"ItemId eq {itemId}");
-            int favoritesCount = favoritesQuery.Count();
-            Console.WriteLine($"Favorited {favoritesCount} entities.");
-
-            WarehouseItems itemsQuery = await _itemTableClient.GetEntityAsync<WarehouseItems>(
-            partitionKey : $"{itemId}",
-            rowKey : $"{itemId}");
-
-            int itemsCount = itemsQuery.Quantity;
-            Console.WriteLine($"Quantity is {itemsCount}");
-            
-
-            if (itemsCount < favoritesCount)
+            try
             {
-                return new OkObjectResult($"Low stock");
+                string itemId = req.Query["ItemId"];
+
+                Console.WriteLine($"ItemId {itemId}");
+
+
+                Pageable<TableEntity> favoritesQuery = _favoriteTableClient.Query<TableEntity>(filter: $"ItemId eq {itemId}");
+                int favoritesCount = favoritesQuery.Count();
+                Console.WriteLine($"Favorited {favoritesCount} entities.");
+
+                WarehouseItems itemsQuery = await _itemTableClient.GetEntityAsync<WarehouseItems>(
+                partitionKey : $"{itemId}",
+                rowKey : $"{itemId}");
+
+                int itemsCount = itemsQuery.Quantity;
+                Console.WriteLine($"Quantity is {itemsCount}");
+                
+
+                if (itemsCount < favoritesCount)
+                {
+                    return new OkObjectResult($"Low stock");
+                }
+                else
+                    return new OkObjectResult($"There are {itemsCount - favoritesCount} more items yet to be wishlisted");
             }
-            else
-                return new OkObjectResult($"There are {itemsCount - favoritesCount} more items yet to be wishlisted");
+            catch (Exception e)
+            {
+                log.LogError(e, "Problem loading");
+                return new BadRequestObjectResult("There was an issue");
+            }
         }
-        catch (Exception e)
-        {
-            log.LogError(e, "Problem loading");
-            return new BadRequestObjectResult("There was an issue");
-        }
-    }
     }
 
 
