@@ -99,13 +99,9 @@ namespace TableStorage
         {
             try
             {
-                Uri myUri = new Uri("http://localhost:7071/api/GetItem1?PartitionKey=1");
-                string Parameters = HttpUtility.ParseQueryString(myUri.Query).Get("PartitionKey");
-
-                log.LogInformation(Parameters);
-                Pageable<TableEntity> queryResultsFilter = _itemTableClient.Query<TableEntity>(ent => ent.PartitionKey.Equals(Parameters));
+                string partitionKey = req.Query["PartitionKey"];
+                Pageable<TableEntity> queryResultsFilter = _itemTableClient.Query<TableEntity>(filter: $"PartitionKey eq {partitionKey}");
                 return new OkObjectResult(queryResultsFilter);
-
             }
             catch (Exception e)
             {
